@@ -9,57 +9,108 @@ const partners = [
   { icon: "🌊", name: "부산광역시", desc: "지방자치단체", url: "https://www.busan.go.kr" },
 ];
 
+// 무한 루프를 위해 3벌 복제
+const marqueeItems = [...partners, ...partners, ...partners];
+
 export default function Footer() {
   return (
     <>
-      {/* 관련기관 배너 */}
-      <div style={{ background: "var(--green-light)", borderTop: "1px solid #d8e8d0", padding: "36px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 40, flexWrap: "wrap" }}>
+      {/* 관련기관 슬라이딩 배너 */}
+      <div
+        style={{
+          background: "var(--green-light)",
+          borderTop: "2px solid #c8dcc0",
+          borderBottom: "2px solid #c8dcc0",
+          padding: "0",
+          overflow: "hidden",
+        }}
+      >
+        <style>{`
+          @keyframes marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+          }
+          .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee 18s linear infinite;
+          }
+          .marquee-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* 왼쪽 레이블 */}
+          <div
+            style={{
+              flexShrink: 0,
+              padding: "0 28px",
+              height: 64,
+              display: "flex",
+              alignItems: "center",
+              borderRight: "1px solid #c8dcc0",
+              background: "var(--green-dark)",
+            }}
+          >
             <span
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                letterSpacing: "0.12em",
-                color: "var(--green-dark)",
+                letterSpacing: "0.14em",
+                color: "white",
                 textTransform: "uppercase",
-                flexShrink: 0,
+                whiteSpace: "nowrap",
               }}
             >
               관련기관
             </span>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", flex: 1 }}>
-              {partners.map((p) => (
+          </div>
+
+          {/* 슬라이딩 트랙 */}
+          <div style={{ overflow: "hidden", flex: 1 }}>
+            <div className="marquee-track">
+              {marqueeItems.map((p, i) => (
                 <a
-                  key={p.name}
+                  key={i}
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: 7,
-                    padding: "8px 16px",
-                    background: "white",
-                    border: "1px solid #c8dcc0",
-                    borderRadius: 4,
-                    fontSize: 13,
-                    fontWeight: 500,
+                    gap: 10,
+                    height: 64,
+                    padding: "0 36px",
+                    borderRight: "1px solid #d8ecd0",
+                    fontSize: 14,
+                    fontWeight: 600,
                     color: "var(--text-mid)",
                     textDecoration: "none",
-                    transition: "border-color 0.15s, background 0.15s",
+                    whiteSpace: "nowrap",
+                    transition: "background 0.15s, color 0.15s",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--green)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--green-light)";
+                    (e.currentTarget as HTMLElement).style.background = "white";
+                    (e.currentTarget as HTMLElement).style.color = "var(--green-dark)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "#c8dcc0";
-                    (e.currentTarget as HTMLElement).style.background = "white";
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color = "var(--text-mid)";
                   }}
                 >
-                  <span style={{ fontSize: 15 }}>{p.icon}</span>
-                  {p.name}
+                  <span style={{ fontSize: 20 }}>{p.icon}</span>
+                  <span>{p.name}</span>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: "var(--text-gray)",
+                      fontWeight: 400,
+                      marginLeft: 2,
+                    }}
+                  >
+                    {p.desc}
+                  </span>
                 </a>
               ))}
             </div>
