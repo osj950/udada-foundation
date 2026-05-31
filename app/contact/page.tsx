@@ -68,9 +68,7 @@ export default function ContactPage() {
 
               <div style={{ marginTop: 36, padding: "24px 28px", background: "var(--yellow-light)", borderLeft: "4px solid var(--yellow-mid)", borderRadius: "0 8px 8px 0" }}>
                 <p style={{ fontSize: 14, color: "var(--text-mid)", lineHeight: 1.8, wordBreak: "keep-all" }}>
-                  부산 지하철 1호선 <strong>온천장역</strong> 하차 후 마을버스 이용
-                  <br />
-                  또는 <strong>금정구청역</strong>에서 택시 이용
+                  🚇 부산 지하철 1호선 <strong>범어사역</strong> 하차 후 걸어서 15분
                 </p>
               </div>
             </div>
@@ -85,7 +83,7 @@ export default function ContactPage() {
                 }}
               >
                 <iframe
-                  src="https://map.kakao.com/link/map/우다다청소년재단,35.2342018,129.0840826/embed"
+                  src="https://map.kakao.com/link/map/우다다청소년재단,35.2796320,129.0882502/embed"
                   style={{ width: "100%", height: 360, border: "none", display: "block" }}
                   title="우다다청소년재단 위치"
                   allowFullScreen
@@ -93,7 +91,7 @@ export default function ContactPage() {
               </div>
               <div style={{ marginTop: 12, textAlign: "right" }}>
                 <a
-                  href="https://map.kakao.com/link/map/우다다청소년재단,35.2342018,129.0840826"
+                  href="https://map.kakao.com/link/map/우다다청소년재단,35.2796320,129.0882502"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ fontSize: 13, color: "var(--green-dark)", textDecoration: "none", fontWeight: 500 }}
