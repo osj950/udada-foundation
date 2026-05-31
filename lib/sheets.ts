@@ -111,6 +111,103 @@ export async function updatePost(id: string, data: Omit<Post, "id">) {
   });
 }
 
+// ─── 연혁 ──────────────────────────────────────────────
+// 시트명: history / 컬럼: id | year | events (|로 구분된 항목들)
+
+const HISTORY_SHEET = "history";
+
+export type HistoryItem = {
+  id: string;
+  year: string;
+  events: string[]; // 각 항목
+};
+
+function rowToHistory(r: string[]): HistoryItem {
+  return {
+    id: r[0] ?? "",
+    year: r[1] ?? "",
+    events: (r[2] ?? "").split("|").map((e) => e.trim()).filter(Boolean),
+  };
+}
+
+export async function getHistoryItems(): Promise<HistoryItem[]> {
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${HISTORY_SHEET}!A:C`,
+  });
+  const rows = (res.data.values ?? []).slice(1);
+  return rows.map(rowToHistory).filter((h) => h.id && h.year);
+}
+
+async function findHistoryRowById(id: string): Promise<number> {
+  const auth = getAuth(false);
+  const sheets = google.sheets({ version: "v4", auth });
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${HISTORY_SHEET}!A:A`,
+  });
+  const rows = res.data.values ?? [];
+  const idx = rows.findIndex((r) => r[0] === id);
+  if (idx === -1) throw new Error("항목을 찾을 수 없습니다.");
+  return idx + 1;
+}
+
+export async function appendHistoryItem(data: Omit<HistoryItem, "id">): Promise<string> {
+  const auth = getAuth(false);
+  const sheets = google.sheets({ version: "v4", auth });
+  const id = Date.now().toString();
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${HISTORY_SHEET}!A:C`,
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[id, data.year, data.events.join("|")]],
+    },
+  });
+  return id;
+}
+
+export async function updateHistoryItem(id: string, data: Omit<HistoryItem, "id">) {
+  const auth = getAuth(false);
+  const sheets = google.sheets({ version: "v4", auth });
+  const rowNum = await findHistoryRowById(id);
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${HISTORY_SHEET}!B${rowNum}:C${rowNum}`,
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[data.year, data.events.join("|")]],
+    },
+  });
+}
+
+export async function deleteHistoryItem(id: string) {
+  const auth = getAuth(false);
+  const sheets = google.sheets({ version: "v4", auth });
+
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${HISTORY_SHEET}!A:A`,
+  });
+  const rows = res.data.values ?? [];
+  const idx = rows.findIndex((r) => r[0] === id);
+  if (idx === -1) throw new Error("항목을 찾을 수 없습니다.");
+
+  const info = await sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
+  const sheetId = info.data.sheets?.find((s) => s.properties?.title === HISTORY_SHEET)?.properties?.sheetId;
+  if (sheetId === undefined) throw new Error("시트를 찾을 수 없습니다.");
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: SPREADSHEET_ID,
+    requestBody: {
+      requests: [{ deleteDimension: { range: { sheetId, dimension: "ROWS", startIndex: idx, endIndex: idx + 1 } } }],
+    },
+  });
+}
+
+// ─── deletePost ────────────────────────────────────────
 export async function deletePost(id: string) {
   const auth = getAuth(false);
   const sheets = google.sheets({ version: "v4", auth });
