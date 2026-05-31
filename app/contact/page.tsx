@@ -83,7 +83,7 @@ export default function ContactPage() {
                 }}
               >
                 <iframe
-                  src="https://map.kakao.com/link/map/우다다청소년재단,35.2796320,129.0882502/embed"
+                  src="https://map.naver.com/p/entry/address/3AIaOf,2ze4mS,%EB%B6%80%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EA%B8%88%EC%A0%95%EA%B5%AC%20%EC%B2%AD%EB%A3%A1%EC%98%88%EC%A0%84%EB%A1%9C%2084?embed=true"
                   style={{ width: "100%", height: 360, border: "none", display: "block" }}
                   title="우다다청소년재단 위치"
                   allowFullScreen
@@ -91,12 +91,12 @@ export default function ContactPage() {
               </div>
               <div style={{ marginTop: 12, textAlign: "right" }}>
                 <a
-                  href="https://map.kakao.com/link/map/우다다청소년재단,35.2796320,129.0882502"
+                  href="https://naver.me/xSBB3TMR"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ fontSize: 13, color: "var(--green-dark)", textDecoration: "none", fontWeight: 500 }}
                 >
-                  카카오맵에서 보기 →
+                  네이버지도에서 보기 →
                 </a>
               </div>
             </div>
