@@ -274,8 +274,12 @@ function AdminMain({ pw }: { pw: string }) {
   const load = useCallback(() => {
     setLoading(true);
     adminFetch("/api/admin/posts", pw)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("API 오류");
+        return r.json();
+      })
       .then((data) => { if (Array.isArray(data)) setPosts(data); })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, [pw]);
 
