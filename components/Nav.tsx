@@ -10,9 +10,11 @@ const links = [
   { href: "/history", label: "연혁" },
   { href: "/news", label: "사업소식" },
   { href: "/activity", label: "활동소식" },
-  { href: "/partners", label: "관련기관" },
   { href: "/contact", label: "오시는길" },
+  { href: "http://www.udada.or.kr", label: "우다다학교", external: true },
 ];
+
+type NavLink = { href: string; label: string; external?: boolean };
 
 export default function Nav() {
   const pathname = usePathname();
@@ -74,17 +76,19 @@ export default function Nav() {
 
       {/* 데스크탑 메뉴 */}
       <ul style={{ display: "flex", gap: 32, listStyle: "none", margin: 0 }} className="hidden md:flex">
-        {links.map(({ href, label }) => {
-          const active = pathname === href || pathname.startsWith(href + "/");
+        {(links as NavLink[]).map(({ href, label, external }) => {
+          const active = !external && (pathname === href || pathname.startsWith(href + "/"));
           return (
             <li key={href}>
               <Link
                 href={href}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
                 style={{
                   textDecoration: "none",
                   fontSize: 14,
                   fontWeight: 500,
-                  color: active ? "var(--green-dark)" : "var(--text-mid)",
+                  color: external ? "var(--green)" : active ? "var(--green-dark)" : "var(--text-mid)",
                   letterSpacing: "0.03em",
                   position: "relative",
                   paddingBottom: 4,
@@ -124,17 +128,19 @@ export default function Nav() {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         >
-          {links.map(({ href, label }) => (
+          {(links as NavLink[]).map(({ href, label, external }) => (
             <Link
               key={href}
               href={href}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
               onClick={() => setOpen(false)}
               style={{
                 display: "block",
                 padding: "12px 48px",
                 fontSize: 14,
                 fontWeight: 500,
-                color: "var(--text-mid)",
+                color: external ? "var(--green)" : "var(--text-mid)",
                 textDecoration: "none",
               }}
             >
