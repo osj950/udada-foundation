@@ -7,7 +7,7 @@ function getDriveAuth() {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     },
-    scopes: ["https://www.googleapis.com/auth/drive.file"],
+    scopes: ["https://www.googleapis.com/auth/drive"],
   });
 }
 
@@ -20,6 +20,7 @@ export async function uploadFileToDrive(
   const drive = google.drive({ version: "v3", auth });
 
   const res = await drive.files.create({
+    supportsAllDrives: true,
     requestBody: {
       name: filename,
       parents: process.env.GOOGLE_DRIVE_FOLDER_ID
@@ -37,6 +38,7 @@ export async function uploadFileToDrive(
 
   await drive.permissions.create({
     fileId,
+    supportsAllDrives: true,
     requestBody: { role: "reader", type: "anyone" },
   });
 
