@@ -24,13 +24,14 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "48px 0",
         }}
       >
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }} className="pg-pad">
           <Link href="/news" style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
             ← 목록으로
           </Link>
@@ -44,16 +45,25 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               {CATEGORY_LABELS[post.category] ?? post.category}
             </span>
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 700, color: "white", lineHeight: 1.4, wordBreak: "keep-all" }}>
+          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 26, fontWeight: 700, color: "white", lineHeight: 1.4, wordBreak: "keep-all" }}>
             {post.title}
           </h1>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginTop: 12 }}>{post.date}</p>
         </div>
       </div>
 
-      <section style={{ background: "var(--bg)", padding: "60px 0" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 60px" }}>
-          <div style={{ background: "white", borderRadius: 8, padding: "40px 48px", border: "1px solid #e8ede4", minHeight: 300 }}>
+      <section style={{ background: "var(--bg)", padding: "60px 0" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 800, margin: "0 auto" }} className="pg-pad">
+          <div
+            className="mob-content-pad"
+            style={{
+              background: "var(--surface)",
+              borderRadius: 8,
+              padding: "40px 48px",
+              border: "1px solid var(--border)",
+              minHeight: 300,
+            }}
+          >
             <div
               style={{
                 fontSize: 16,
@@ -66,37 +76,43 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               {post.content || <span style={{ color: "var(--text-gray)", fontSize: 14 }}>내용이 없습니다.</span>}
             </div>
 
-            {post.attachmentUrl && (
-              <div style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid #e8ede4" }}>
+            {post.attachments?.length > 0 && (
+              <div style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid var(--border)" }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--green)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
-                  첨부파일
+                  첨부파일 ({post.attachments.length})
                 </div>
-                <a
-                  href={post.attachmentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "12px 20px",
-                    background: "var(--green-light)",
-                    border: "1px solid #c4d8b8",
-                    borderRadius: 6,
-                    fontSize: 14,
-                    color: "var(--green-dark)",
-                    fontWeight: 500,
-                    textDecoration: "none",
-                  }}
-                >
-                  📎 {post.attachmentName || "첨부파일 다운로드"}
-                </a>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {post.attachments.map((att, i) => (
+                    <a
+                      key={i}
+                      href={att.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 10,
+                        padding: "10px 18px",
+                        background: "var(--green-light)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 6,
+                        fontSize: 14,
+                        color: "var(--green-dark)",
+                        fontWeight: 500,
+                        textDecoration: "none",
+                        alignSelf: "flex-start",
+                      }}
+                    >
+                      📎 {att.name || "첨부파일 다운로드"}
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
           {/* 이전글/다음글 */}
-          <div style={{ marginTop: 24, background: "white", borderRadius: 8, border: "1px solid #e8ede4", overflow: "hidden" }}>
+          <div style={{ marginTop: 24, background: "var(--surface)", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden" }}>
             {next && (
               <Link
                 href={`/news/${next.id}`}
@@ -105,7 +121,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
                   alignItems: "center",
                   gap: 16,
                   padding: "16px 24px",
-                  borderBottom: "1px solid #f0f4ed",
+                  borderBottom: "1px solid var(--border-light)",
                   textDecoration: "none",
                 }}
               >

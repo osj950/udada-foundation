@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* ── LIGHT MODE ── */
 :root {
   --yellow: #f0cc30;
   --yellow-light: #fdf6d3;
@@ -11,6 +12,30 @@
   --text-mid: #3d4f35;
   --text-gray: #6b7c61;
   --bg: #fafaf7;
+  --surface: #ffffff;
+  --surface-pinned: #fffdf0;
+  --nav-bg: rgba(255,255,255,0.96);
+  --border: #e8ede4;
+  --border-light: #f0f4ed;
+  --footer-bg: #1e2a1a;
+}
+
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1410;
+    --surface: #1a2018;
+    --surface-pinned: #1c1c0e;
+    --nav-bg: rgba(15,20,16,0.97);
+    --border: #2a3826;
+    --border-light: #1e2a1c;
+    --text-dark: #e4ede0;
+    --text-mid: #bcceb4;
+    --text-gray: #7a9070;
+    --green-light: #182414;
+    --yellow-light: #1c1a08;
+    --footer-bg: #080d08;
+  }
 }
 
 @theme inline {
@@ -34,12 +59,90 @@ body {
   color: var(--text-dark);
 }
 
+input, textarea, select {
+  background: var(--surface);
+  color: var(--text-dark);
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-up { animation: fadeUp 0.6s ease both; }
+.animate-fade-up   { animation: fadeUp 0.6s ease both; }
 .animate-fade-up-1 { animation: fadeUp 0.6s 0.1s ease both; }
 .animate-fade-up-2 { animation: fadeUp 0.6s 0.2s ease both; }
 .animate-fade-up-3 { animation: fadeUp 0.6s 0.3s ease both; }
+
+/* ── LAYOUT ── */
+.pg-pad  { padding-left: 60px; padding-right: 60px; }
+.nav-pad { padding: 0 48px; }
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.info-row   { display: grid; grid-template-columns: 160px 1fr; }
+.biz-hd     { display: flex; align-items: flex-start; gap: 48px; }
+
+/* ── 인스타그램 그리드 ── */
+.insta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+/* ── 후원 팝업 ── */
+.donate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.donate-modal {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .pg-pad  { padding-left: 20px; padding-right: 20px; }
+  .nav-pad { padding: 0 16px; }
+
+  .g2 { grid-template-columns: 1fr; gap: 32px !important; }
+  .g3 { grid-template-columns: 1fr; gap: 20px !important; }
+  .g4 { grid-template-columns: 1fr 1fr; gap: 12px !important; }
+  .info-row { grid-template-columns: 1fr; }
+  .stats-grid { gap: 12px !important; }
+
+  .hero-cards { display: none; }
+
+  .biz-hd { flex-direction: column; gap: 16px; align-items: flex-start; }
+
+  .hero-h1 { font-size: 30px !important; }
+  .page-h1 { font-size: 26px !important; }
+  .sec-h2  { font-size: 22px !important; }
+
+  .mob-card-pad    { padding: 20px 16px !important; }
+  .mob-sec-pad     { padding: 48px 0 !important; }
+  .mob-head-pad    { padding: 36px 0 !important; }
+  .mob-content-pad { padding: 24px 20px !important; }
+
+  /* 인스타 2열 */
+  .insta-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 3px !important; }
+
+  /* 후원 팝업 → 바텀시트 */
+  .donate-overlay { padding: 0; align-items: flex-end; }
+  .donate-modal   { border-radius: 20px 20px 0 0; max-width: 100%; max-height: 88dvh; }
+}

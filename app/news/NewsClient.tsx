@@ -9,8 +9,7 @@ type Post = {
   category: string;
   content: string;
   date: string;
-  attachmentUrl: string;
-  attachmentName: string;
+  attachments: { url: string; name: string }[];
   isPinned: boolean;
 };
 
@@ -65,24 +64,25 @@ export default function NewsClient() {
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "64px 0",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             News
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
+          <h1 className="page-h1" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
             사업소식
           </h1>
         </div>
       </div>
 
-      <section style={{ background: "var(--bg)", padding: "60px 0", minHeight: "60vh" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+      <section style={{ background: "var(--bg)", padding: "60px 0", minHeight: "60vh" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           {/* 카테고리 탭 */}
           <div style={{ display: "flex", gap: 8, marginBottom: 36, flexWrap: "wrap" }}>
             {CATEGORIES.map((cat) => (
@@ -93,8 +93,8 @@ export default function NewsClient() {
                   padding: "10px 20px",
                   borderRadius: 4,
                   border: "1px solid",
-                  borderColor: activeCategory === cat.value ? "var(--green-dark)" : "#d8e8d0",
-                  background: activeCategory === cat.value ? "var(--green-dark)" : "white",
+                  borderColor: activeCategory === cat.value ? "var(--green-dark)" : "var(--border)",
+                  background: activeCategory === cat.value ? "var(--green-dark)" : "var(--surface)",
                   color: activeCategory === cat.value ? "white" : "var(--text-mid)",
                   fontSize: 14,
                   fontWeight: activeCategory === cat.value ? 700 : 400,
@@ -116,7 +116,7 @@ export default function NewsClient() {
               게시글이 없습니다.
             </div>
           ) : (
-            <div style={{ background: "white", borderRadius: 8, border: "1px solid #e8ede4", overflow: "hidden" }}>
+            <div style={{ background: "var(--surface)", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden" }}>
               {display.map((post, idx) => {
                 const catColor = CATEGORY_COLORS[post.category] ?? { bg: "#f0f4ed", text: "#4a7a38" };
                 return (
@@ -126,12 +126,13 @@ export default function NewsClient() {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: 16,
-                      padding: "18px 28px",
-                      borderBottom: idx < display.length - 1 ? "1px solid #f0f4ed" : "none",
-                      background: post.isPinned ? "#fffdf0" : "white",
+                      gap: 12,
+                      padding: "18px 24px",
+                      borderBottom: idx < display.length - 1 ? "1px solid var(--border-light)" : "none",
+                      background: post.isPinned ? "var(--surface-pinned)" : "var(--surface)",
                       textDecoration: "none",
                       transition: "background 0.15s",
+                      flexWrap: "wrap",
                     }}
                   >
                     {post.isPinned && (
@@ -152,11 +153,13 @@ export default function NewsClient() {
                     >
                       {CATEGORY_LABELS[post.category] ?? post.category}
                     </span>
-                    <span style={{ flex: 1, fontSize: 15, color: "var(--text-dark)", fontWeight: post.isPinned ? 600 : 400, wordBreak: "keep-all" }}>
+                    <span style={{ flex: 1, fontSize: 15, color: "var(--text-dark)", fontWeight: post.isPinned ? 600 : 400, wordBreak: "keep-all", minWidth: 120 }}>
                       {post.title}
                     </span>
-                    {post.attachmentUrl && (
-                      <span style={{ fontSize: 16, flexShrink: 0 }} title="첨부파일 있음">📎</span>
+                    {post.attachments?.length > 0 && (
+                      <span style={{ fontSize: 13, color: "var(--text-gray)", flexShrink: 0 }} title="첨부파일 있음">
+                        📎{post.attachments.length > 1 ? ` ${post.attachments.length}` : ""}
+                      </span>
                     )}
                     <span style={{ fontSize: 13, color: "var(--text-gray)", flexShrink: 0 }}>
                       {post.date}

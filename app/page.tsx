@@ -5,63 +5,23 @@ export default function HomePage() {
     <>
       {/* HERO */}
       <section
+        className="mob-sec-pad"
         style={{
           marginTop: 68,
-          minHeight: "92vh",
+          minHeight: "88vh",
           background: "linear-gradient(160deg, #1e3a14 0%, #2d5220 40%, #3d6b2e 100%)",
           display: "flex",
           alignItems: "center",
           position: "relative",
           overflow: "hidden",
-          padding: "80px 0",
+          padding: "60px 0",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            width: 600,
-            height: 600,
-            borderRadius: "50%",
-            background: "var(--yellow)",
-            opacity: 0.08,
-            right: -100,
-            top: -150,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            width: 300,
-            height: 300,
-            borderRadius: "50%",
-            background: "var(--yellow)",
-            opacity: 0.08,
-            right: 200,
-            bottom: -100,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage:
-              "repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.025) 80px, rgba(255,255,255,0.025) 81px)",
-          }}
-        />
+        <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "var(--yellow)", opacity: 0.08, right: -100, top: -150 }} />
+        <div style={{ position: "absolute", width: 300, height: 300, borderRadius: "50%", background: "var(--yellow)", opacity: 0.08, right: 200, bottom: -100 }} />
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.025) 80px, rgba(255,255,255,0.025) 81px)" }} />
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            maxWidth: 1100,
-            margin: "0 auto",
-            padding: "0 60px",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "center",
-          }}
-        >
+        <div className="pg-pad g2" style={{ position: "relative", zIndex: 2, maxWidth: 1100, margin: "0 auto", gap: 80, alignItems: "center" }}>
           <div>
             <span
               style={{
@@ -80,6 +40,7 @@ export default function HomePage() {
               사단법인 우다다청소년재단
             </span>
             <h1
+              className="hero-h1"
               style={{
                 fontFamily: "'Noto Serif KR', serif",
                 fontSize: 48,
@@ -128,7 +89,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div className="hero-cards" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {[
               { num: "SINCE 2001", title: "대안교육사업", desc: "학교 밖 청소년들에게 배움의 기회를 제공합니다" },
               { num: "PROGRAM", title: "심리·정서 지원", desc: "문화·예술 활동으로 건강한 자아발달을 돕습니다" },
@@ -144,12 +105,8 @@ export default function HomePage() {
                   padding: "20px 24px",
                 }}
               >
-                <div style={{ fontSize: 11, color: "var(--yellow)", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 6 }}>
-                  {card.num}
-                </div>
-                <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 17, color: "white", fontWeight: 600, marginBottom: 6 }}>
-                  {card.title}
-                </div>
+                <div style={{ fontSize: 11, color: "var(--yellow)", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 6 }}>{card.num}</div>
+                <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 17, color: "white", fontWeight: 600, marginBottom: 6 }}>{card.title}</div>
                 <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{card.desc}</div>
               </div>
             ))}
@@ -158,14 +115,14 @@ export default function HomePage() {
       </section>
 
       {/* ABOUT 요약 */}
-      <section style={{ background: "white", padding: "96px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+      <section style={{ background: "var(--surface)", padding: "80px 0" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
+          <div className="g2" style={{ gap: 80, alignItems: "center" }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--green)", textTransform: "uppercase", marginBottom: 12 }}>
                 About Foundation
               </div>
-              <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "var(--text-dark)", marginBottom: 16, lineHeight: 1.35 }}>
+              <h2 className="sec-h2" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "var(--text-dark)", marginBottom: 16, lineHeight: 1.35 }}>
                 사단법인<br />우다다청소년재단
               </h2>
               <p style={{ fontSize: 15.5, color: "var(--text-gray)", lineHeight: 1.8, wordBreak: "keep-all", marginBottom: 32 }}>
@@ -181,7 +138,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div className="stats-grid">
               {[
                 { num: "25년", label: "설립 이후\n청소년 교육" },
                 { num: "2009", label: "사단법인\n공식 설립" },
@@ -203,23 +160,23 @@ export default function HomePage() {
       </section>
 
       {/* BUSINESS 요약 */}
-      <section style={{ background: "var(--bg)", padding: "96px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+      <section style={{ background: "var(--bg)", padding: "80px 0" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ marginBottom: 48 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--green)", textTransform: "uppercase", marginBottom: 12 }}>
               Main Business
             </div>
-            <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "var(--text-dark)" }}>
+            <h2 className="sec-h2" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "var(--text-dark)" }}>
               주요 사업
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="g3" style={{ gap: 24 }}>
             {[
-              { icon: "📚", title: "청소년을 위한\n대안교육사업", desc: "여러 가지 어려움으로 인해 공교육 내의 학업을 이어가기 어려운 학교 밖 청소년들에게 배움의 기회를 제공하여 자신의 자아를 실현하고 건강한 사회구성원으로 성장할 수 있도록 합니다.", bottom: "도보여행 · 기초학력증진 · 청소년창작센터" },
-              { icon: "🌱", title: "심리·정서,\n문화·예술 지원", desc: "청소년의 건강한 자아발달을 위해 필요한 긍정적 자기이해와 건강한 부모·교사를 형성하기 위한 문화·예술, 정서·심리 지원 사업을 진행합니다.", bottom: "성평등 · 문화예술교육 · 심리지원" },
+              { icon: "📚", title: "청소년을 위한\n대안교육사업", desc: "여러 가지 어려움으로 인해 공교육 내의 학업을 이어가기 어려운 학교 밖 청소년들에게 배움의 기회를 제공하여 자신의 자아를 실현하고 건강한 사회구성원으로 성장할 수 있도록 합니다.", bottom: "거침없는 우다다학교" },
+              { icon: "🌱", title: "심리·정서,\n문화·예술 지원", desc: "청소년의 건강한 자아발달을 위해 필요한 긍정적 자기이해와 건강한 부모·교사를 형성하기 위한 문화·예술, 정서·심리 지원 사업을 진행합니다.", bottom: "소매틱기반 · 문화예술교육 · 심리지원" },
               { icon: "📖", title: "우다다\n작은 도서관", desc: "지역사회 주민들을 위한 도서관 개방을 통하여 다양한 교육의 기회를 제공하고 지역 공동체가 함께 성장하는 배움의 공간을 운영합니다.", bottom: "부산 금정구 · 지역사회 개방 운영" },
             ].map((biz) => (
-              <div key={biz.icon} style={{ background: "white", borderRadius: 8, overflow: "hidden", border: "1px solid #e8ede4" }}>
+              <div key={biz.icon} style={{ background: "var(--surface)", borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
                 <div style={{ padding: "36px 32px 28px" }}>
                   <div style={{ width: 52, height: 52, background: "var(--green-light)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 20 }}>
                     {biz.icon}
@@ -229,7 +186,7 @@ export default function HomePage() {
                   </div>
                   <p style={{ fontSize: 14, color: "var(--text-gray)", lineHeight: 1.8, wordBreak: "keep-all" }}>{biz.desc}</p>
                 </div>
-                <div style={{ padding: "18px 32px", background: "var(--green-light)", borderTop: "1px solid #d8e8d0", fontSize: 13, color: "var(--green-dark)", fontWeight: 500 }}>
+                <div style={{ padding: "18px 32px", background: "var(--green-light)", borderTop: "1px solid var(--border)", fontSize: 13, color: "var(--green-dark)", fontWeight: 500 }}>
                   {biz.bottom}
                 </div>
               </div>
@@ -239,18 +196,18 @@ export default function HomePage() {
       </section>
 
       {/* HISTORY 요약 */}
-      <section style={{ background: "var(--green-dark)", padding: "96px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+      <section style={{ background: "var(--green-dark)", padding: "80px 0" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             History
           </div>
-          <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "white", marginBottom: 16 }}>
+          <h2 className="sec-h2" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 34, fontWeight: 700, color: "white", marginBottom: 16 }}>
             연혁
           </h2>
-          <p style={{ fontSize: 15.5, color: "rgba(255,255,255,0.65)", marginBottom: 56 }}>
+          <p style={{ fontSize: 15.5, color: "rgba(255,255,255,0.65)", marginBottom: 48 }}>
             우다다청소년재단이 걸어온 25년의 발자취입니다.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 60px" }}>
+          <div className="g2" style={{ gap: "0 60px" }}>
             {[
               [
                 { year: "2001", content: "(사)사랑의 도시락보내기 운동본부 부설 비인가 대안교육기관 운영 개시\n학교밖청소년 교육 및 문화, 심리지원" },

@@ -34,17 +34,18 @@ export default function ActivityClient() {
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "64px 0",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             Activity
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
+          <h1 className="page-h1" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
             활동소식
           </h1>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", marginTop: 12 }}>
@@ -53,8 +54,8 @@ export default function ActivityClient() {
         </div>
       </div>
 
-      <section style={{ background: "var(--bg)", padding: "60px 0", minHeight: "60vh" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+      <section style={{ background: "var(--bg)", padding: "60px 0", minHeight: "60vh" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           {loading ? (
             <div style={{ textAlign: "center", padding: "80px 0", color: "var(--text-gray)", fontSize: 15 }}>
               불러오는 중...
@@ -91,14 +92,7 @@ export default function ActivityClient() {
             </div>
           ) : (
             <>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 4,
-                  marginBottom: 40,
-                }}
-              >
+              <div className="insta-grid" style={{ marginBottom: 40 }}>
                 {posts.map((post) => {
                   const imgSrc = post.media_type === "VIDEO" ? post.thumbnail_url : post.media_url;
                   return (
@@ -112,7 +106,7 @@ export default function ActivityClient() {
                         position: "relative",
                         aspectRatio: "1",
                         overflow: "hidden",
-                        background: "#e8ede4",
+                        background: "var(--green-light)",
                       }}
                     >
                       {imgSrc ? (

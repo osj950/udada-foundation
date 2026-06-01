@@ -17,26 +17,28 @@ function getAuth(readonly = true) {
   });
 }
 
+export type Attachment = { url: string; name: string };
+
 export type Post = {
   id: string;
   title: string;
   category: string;
   content: string;
   date: string;
-  attachmentUrl: string;
-  attachmentName: string;
+  attachments: Attachment[];
   isPinned: boolean;
 };
 
 function rowToPost(r: string[]): Post {
+  const urls  = (r[5] ?? "").split("|").map((s) => s.trim()).filter(Boolean);
+  const names = (r[6] ?? "").split("|").map((s) => s.trim()).filter(Boolean);
   return {
     id: r[0] ?? "",
     title: r[1] ?? "",
     category: r[2] ?? "",
     content: r[3] ?? "",
     date: r[4] ?? "",
-    attachmentUrl: r[5] ?? "",
-    attachmentName: r[6] ?? "",
+    attachments: urls.map((url, i) => ({ url, name: names[i] ?? url })),
     isPinned: r[7]?.toUpperCase() === "TRUE",
   };
 }
@@ -69,21 +71,14 @@ export async function appendPost(data: Omit<Post, "id">): Promise<string> {
   const auth = getAuth(false);
   const sheets = google.sheets({ version: "v4", auth });
   const id = Date.now().toString();
+  const urls  = (data.attachments ?? []).map((a) => a.url).join("|");
+  const names = (data.attachments ?? []).map((a) => a.name).join("|");
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
     range: `${SHEET}!A:H`,
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        id,
-        data.title,
-        data.category,
-        data.content,
-        data.date,
-        data.attachmentUrl,
-        data.attachmentName,
-        data.isPinned ? "TRUE" : "FALSE",
-      ]],
+      values: [[id, data.title, data.category, data.content, data.date, urls, names, data.isPinned ? "TRUE" : "FALSE"]],
     },
   });
   return id;
@@ -93,20 +88,14 @@ export async function updatePost(id: string, data: Omit<Post, "id">) {
   const auth = getAuth(false);
   const sheets = google.sheets({ version: "v4", auth });
   const rowNum = await findRowById(id);
+  const urls  = (data.attachments ?? []).map((a) => a.url).join("|");
+  const names = (data.attachments ?? []).map((a) => a.name).join("|");
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
     range: `${SHEET}!B${rowNum}:H${rowNum}`,
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        data.title,
-        data.category,
-        data.content,
-        data.date,
-        data.attachmentUrl,
-        data.attachmentName,
-        data.isPinned ? "TRUE" : "FALSE",
-      ]],
+      values: [[data.title, data.category, data.content, data.date, urls, names, data.isPinned ? "TRUE" : "FALSE"]],
     },
   });
 }

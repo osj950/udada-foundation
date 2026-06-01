@@ -2,25 +2,26 @@ export default function ContactPage() {
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "64px 0",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             Contact
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
+          <h1 className="page-h1" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
             오시는 길
           </h1>
         </div>
       </div>
 
-      <section style={{ background: "var(--bg)", padding: "80px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }}>
+      <section style={{ background: "var(--bg)", padding: "80px 0" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
+          <div className="g2" style={{ gap: 60, alignItems: "start" }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--green)", textTransform: "uppercase", marginBottom: 24 }}>
                 Contact Info
@@ -36,8 +37,8 @@ export default function ContactPage() {
                     display: "flex",
                     gap: 16,
                     padding: "20px 0",
-                    borderTop: i === 0 ? "1px solid #e4ede0" : "none",
-                    borderBottom: "1px solid #e4ede0",
+                    borderTop: i === 0 ? "1px solid var(--border)" : "none",
+                    borderBottom: "1px solid var(--border)",
                   }}
                 >
                   <div
@@ -79,7 +80,7 @@ export default function ContactPage() {
                   width: "100%",
                   borderRadius: 10,
                   overflow: "hidden",
-                  border: "1px solid #d8e8d0",
+                  border: "1px solid var(--border)",
                 }}
               >
                 <iframe

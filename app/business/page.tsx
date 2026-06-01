@@ -44,17 +44,18 @@ export default function BusinessPage() {
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "64px 0",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             Main Business
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
+          <h1 className="page-h1" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
             주요사업
           </h1>
         </div>
@@ -63,10 +64,11 @@ export default function BusinessPage() {
       {businesses.map((biz, i) => (
         <section
           key={biz.icon}
-          style={{ background: i % 2 === 0 ? "white" : "var(--bg)", padding: "80px 0" }}
+          className="mob-sec-pad"
+          style={{ background: i % 2 === 0 ? "var(--surface)" : "var(--bg)", padding: "80px 0" }}
         >
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 48, marginBottom: 48 }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
+            <div className="biz-hd" style={{ marginBottom: 48 }}>
               <div style={{ width: 72, height: 72, background: "var(--green-light)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, flexShrink: 0 }}>
                 {biz.icon}
               </div>
@@ -74,7 +76,7 @@ export default function BusinessPage() {
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "var(--green)", textTransform: "uppercase", marginBottom: 8 }}>
                   {biz.subtitle}
                 </div>
-                <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 700, color: "var(--text-dark)", marginBottom: 16 }}>
+                <h2 className="sec-h2" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 28, fontWeight: 700, color: "var(--text-dark)", marginBottom: 16 }}>
                   {biz.title}
                 </h2>
                 <p style={{ fontSize: 15.5, color: "var(--text-gray)", lineHeight: 1.9, wordBreak: "keep-all", maxWidth: 680 }}>
@@ -83,9 +85,9 @@ export default function BusinessPage() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, marginBottom: 28 }}>
+            <div className="g2" style={{ gap: 20, marginBottom: 28 }}>
               {biz.programs.map((prog) => (
-                <div key={prog.name} style={{ background: i % 2 === 0 ? "var(--bg)" : "white", borderRadius: 8, padding: "24px 28px", border: "1px solid #e8ede4" }}>
+                <div key={prog.name} style={{ background: i % 2 === 0 ? "var(--bg)" : "var(--surface)", borderRadius: 8, padding: "24px 28px", border: "1px solid var(--border)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
                     <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 16, fontWeight: 600, color: "var(--text-dark)" }}>
@@ -97,7 +99,7 @@ export default function BusinessPage() {
               ))}
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 20px", background: "var(--green-light)", borderRadius: 6, border: "1px solid #d8e8d0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 20px", background: "var(--green-light)", borderRadius: 6, border: "1px solid var(--border)" }}>
               <span style={{ fontSize: 13, color: "var(--green-dark)", fontWeight: 500 }}>📋 {biz.support}</span>
             </div>
           </div>

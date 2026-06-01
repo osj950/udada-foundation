@@ -11,7 +11,12 @@ export async function POST(req: Request) {
   if (!file) {
     return NextResponse.json({ error: "파일이 없습니다." }, { status: 400 });
   }
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const { url } = await uploadFileToDrive(buffer, file.name, file.type);
-  return NextResponse.json({ ok: true, url, name: file.name });
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { url } = await uploadFileToDrive(buffer, file.name, file.type);
+    return NextResponse.json({ ok: true, url, name: file.name });
+  } catch (err) {
+    console.error("Drive upload error:", err);
+    return NextResponse.json({ error: "Drive 업로드 실패", detail: String(err) }, { status: 500 });
+  }
 }

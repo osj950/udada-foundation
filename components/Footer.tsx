@@ -9,7 +9,6 @@ const partners = [
   { icon: "🌊", name: "부산광역시", desc: "지방자치단체", url: "https://www.busan.go.kr" },
 ];
 
-// 무한 루프를 위해 3벌 복제
 const marqueeItems = [...partners, ...partners, ...partners];
 
 export default function Footer() {
@@ -19,9 +18,8 @@ export default function Footer() {
       <div
         style={{
           background: "var(--green-light)",
-          borderTop: "2px solid #c8dcc0",
-          borderBottom: "2px solid #c8dcc0",
-          padding: "0",
+          borderTop: "2px solid var(--border)",
+          borderBottom: "2px solid var(--border)",
           overflow: "hidden",
         }}
       >
@@ -41,15 +39,15 @@ export default function Footer() {
         `}</style>
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          {/* 왼쪽 레이블 */}
           <div
+            className="hidden md:flex"
             style={{
               flexShrink: 0,
-              padding: "0 28px",
+              padding: "0 20px",
               height: 64,
               display: "flex",
               alignItems: "center",
-              borderRight: "1px solid #c8dcc0",
+              borderRight: "1px solid var(--border)",
               background: "var(--green-dark)",
             }}
           >
@@ -67,7 +65,6 @@ export default function Footer() {
             </span>
           </div>
 
-          {/* 슬라이딩 트랙 */}
           <div style={{ overflow: "hidden", flex: 1 }}>
             <div className="marquee-track">
               {marqueeItems.map((p, i) => (
@@ -81,8 +78,8 @@ export default function Footer() {
                     alignItems: "center",
                     gap: 10,
                     height: 64,
-                    padding: "0 36px",
-                    borderRight: "1px solid #d8ecd0",
+                    padding: "0 32px",
+                    borderRight: "1px solid var(--border)",
                     fontSize: 14,
                     fontWeight: 600,
                     color: "var(--text-mid)",
@@ -91,7 +88,7 @@ export default function Footer() {
                     transition: "background 0.15s, color 0.15s",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "white";
+                    (e.currentTarget as HTMLElement).style.background = "var(--surface)";
                     (e.currentTarget as HTMLElement).style.color = "var(--green-dark)";
                   }}
                   onMouseLeave={(e) => {
@@ -101,14 +98,7 @@ export default function Footer() {
                 >
                   <span style={{ fontSize: 20 }}>{p.icon}</span>
                   <span>{p.name}</span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: "var(--text-gray)",
-                      fontWeight: 400,
-                      marginLeft: 2,
-                    }}
-                  >
+                  <span style={{ fontSize: 11, color: "var(--text-gray)", fontWeight: 400, marginLeft: 2 }}>
                     {p.desc}
                   </span>
                 </a>
@@ -119,8 +109,8 @@ export default function Footer() {
       </div>
 
       {/* 푸터 본문 */}
-      <footer style={{ background: "var(--text-dark)", padding: "48px 0 32px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+      <footer style={{ background: "var(--footer-bg)", padding: "48px 0 32px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div
             style={{
               display: "flex",
@@ -168,6 +158,8 @@ export default function Footer() {
           </div>
           <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.3)", lineHeight: 1.8 }}>
             부산시 금정구 청룡예전로 84 · Tel. 051-582-6101
+            <br />
+            고유번호 621-82-10354
             <br />
             © 2009 (사)우다다청소년재단. All rights reserved.
           </div>

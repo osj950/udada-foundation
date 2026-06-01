@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
-// ─── 타입 ────────────────────────────────────────────────
 type Post = {
   id: string;
   title: string;
   category: string;
   content: string;
   date: string;
-  attachmentUrl: string;
-  attachmentName: string;
+  attachments: { url: string; name: string }[];
   isPinned: boolean;
 };
 
@@ -22,7 +20,6 @@ type HistoryItem = {
 
 type Tab = "news" | "history";
 
-// ─── 상수 ────────────────────────────────────────────────
 const CATEGORY_OPTIONS = [
   { value: "notice", label: "공지사항" },
   { value: "plan", label: "사업계획·결산" },
@@ -50,11 +47,13 @@ function adminFetch(url: string, pw: string, options: RequestInit = {}) {
 
 const inputStyle = {
   width: "100%",
-  border: "1px solid #d8e8d0",
+  border: "1px solid var(--border)",
   borderRadius: 6,
   padding: "10px 14px",
   fontSize: 14,
   outline: "none",
+  background: "var(--surface)",
+  color: "var(--text-dark)",
 } as const;
 
 const btnPrimary = {
@@ -68,7 +67,6 @@ const btnPrimary = {
   fontSize: 14,
 } as const;
 
-// ─── 로그인 화면 ──────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
@@ -94,7 +92,7 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
 
   return (
     <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
-      <div style={{ background: "white", borderRadius: 16, boxShadow: "0 4px 24px rgba(0,0,0,0.1)", padding: 48, width: "100%", maxWidth: 380 }}>
+      <div style={{ background: "var(--surface)", borderRadius: 16, boxShadow: "0 4px 24px rgba(0,0,0,0.15)", padding: 48, width: "100%", maxWidth: 380, border: "1px solid var(--border)" }}>
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🔐</div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-dark)", fontFamily: "'Noto Serif KR', serif" }}>
@@ -114,7 +112,7 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
               placeholder="비밀번호를 입력하세요"
             />
           </div>
-          {error && <p style={{ color: "#c0392b", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+          {error && <p style={{ color: "#e05050", fontSize: 13, marginBottom: 12 }}>{error}</p>}
           <button type="submit" disabled={loading} style={{ ...btnPrimary, width: "100%", padding: "12px 0", fontSize: 15, opacity: loading ? 0.6 : 1 }}>
             {loading ? "확인 중..." : "로그인"}
           </button>
@@ -124,7 +122,6 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
   );
 }
 
-// ─── 사업소식 폼 ─────────────────────────────────────────
 function PostForm({ pw, initial, onDone, onCancel }: {
   pw: string; initial?: Post | null; onDone: () => void; onCancel: () => void;
 }) {
@@ -133,24 +130,38 @@ function PostForm({ pw, initial, onDone, onCancel }: {
   const [content, setContent] = useState(initial?.content ?? "");
   const [date, setDate] = useState(initial?.date ?? today());
   const [isPinned, setIsPinned] = useState(initial?.isPinned ?? false);
-  const [attachmentUrl, setAttachmentUrl] = useState(initial?.attachmentUrl ?? "");
-  const [attachmentName, setAttachmentName] = useState(initial?.attachmentName ?? "");
+  const [attachments, setAttachments] = useState<{ url: string; name: string }[]>(
+    initial?.attachments ?? []
+  );
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await adminFetch("/api/admin/drive", pw, { method: "POST", body: fd });
-    setUploading(false);
-    if (!res.ok) { setError("파일 업로드 실패"); return; }
-    const data = await res.json();
-    setAttachmentUrl(data.url);
-    setAttachmentName(data.name);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await adminFetch("/api/admin/drive", pw, { method: "POST", body: fd });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        setError(`파일 업로드 실패: ${errData.detail ?? errData.error ?? res.status}`);
+        return;
+      }
+      const data = await res.json();
+      setAttachments((prev) => [...prev, { url: data.url, name: data.name }]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeAttachment(idx: number) {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -161,7 +172,7 @@ function PostForm({ pw, initial, onDone, onCancel }: {
     const res = await adminFetch(url, pw, {
       method: initial ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, category, content, date, isPinned, attachmentUrl, attachmentName }),
+      body: JSON.stringify({ title, category, content, date, isPinned, attachments }),
     });
     setSaving(false);
     if (!res.ok) { setError("저장 실패"); return; }
@@ -177,10 +188,10 @@ function PostForm({ pw, initial, onDone, onCancel }: {
         <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>제목 *</label>
         <input required value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} placeholder="제목 입력" />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+      <div className="g2" style={{ gap: 16, marginBottom: 16 }}>
         <div>
           <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>카테고리</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ ...inputStyle, background: "white" }}>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle}>
             {CATEGORY_OPTIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
@@ -193,24 +204,59 @@ function PostForm({ pw, initial, onDone, onCancel }: {
         <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>본문</label>
         <textarea value={content} onChange={(e) => setContent(e.target.value)} style={{ ...inputStyle, minHeight: 200, resize: "vertical" }} placeholder="본문 내용 입력" />
       </div>
+
+      {/* 첨부파일 */}
       <div style={{ marginBottom: 16 }}>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>첨부파일</label>
-        <input type="file" onChange={handleFile} disabled={uploading} style={{ fontSize: 14 }} />
-        {uploading && <p style={{ fontSize: 12, color: "var(--text-gray)", marginTop: 4 }}>업로드 중...</p>}
-        {attachmentUrl && <p style={{ fontSize: 12, color: "var(--green-dark)", marginTop: 4 }}>✔ {attachmentName}</p>}
+        <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8, color: "var(--text-mid)" }}>
+          첨부파일 {attachments.length > 0 && <span style={{ fontWeight: 400, color: "var(--text-gray)" }}>({attachments.length}개)</span>}
+        </label>
+
+        {/* 업로드된 파일 목록 */}
+        {attachments.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
+            {attachments.map((att, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "var(--green-light)", border: "1px solid var(--border)", borderRadius: 6 }}>
+                <span style={{ fontSize: 14 }}>📎</span>
+                <span style={{ flex: 1, fontSize: 13, color: "var(--green-dark)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{att.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeAttachment(i)}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "var(--text-gray)", padding: "0 4px", flexShrink: 0 }}
+                  title="삭제"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 파일 추가 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFile}
+            disabled={uploading}
+            style={{ fontSize: 13, color: "var(--text-dark)", flex: 1 }}
+          />
+          {uploading && <span style={{ fontSize: 12, color: "var(--text-gray)", flexShrink: 0 }}>업로드 중...</span>}
+        </div>
+        <p style={{ fontSize: 11, color: "var(--text-gray)", marginTop: 4 }}>파일을 선택하면 자동으로 추가됩니다. 여러 번 선택해 복수 첨부 가능.</p>
       </div>
+
       <div style={{ marginBottom: 28 }}>
         <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontSize: 14, color: "var(--text-mid)" }}>
           <input type="checkbox" checked={isPinned} onChange={(e) => setIsPinned(e.target.checked)} />
           공지 고정 (목록 상단 노란 배경)
         </label>
       </div>
-      {error && <p style={{ color: "#c0392b", fontSize: 13, marginBottom: 16 }}>{error}</p>}
+      {error && <p style={{ color: "#e05050", fontSize: 13, marginBottom: 16 }}>{error}</p>}
       <div style={{ display: "flex", gap: 12 }}>
         <button type="submit" disabled={saving || uploading} style={{ ...btnPrimary, flex: 1, padding: "12px 0", fontSize: 15, opacity: saving ? 0.6 : 1 }}>
           {saving ? "저장 중..." : "저장"}
         </button>
-        <button type="button" onClick={onCancel} style={{ padding: "12px 24px", background: "white", color: "var(--text-mid)", border: "1px solid #d8e8d0", borderRadius: 6, cursor: "pointer", fontSize: 15 }}>
+        <button type="button" onClick={onCancel} style={{ padding: "12px 24px", background: "var(--surface)", color: "var(--text-mid)", border: "1px solid var(--border)", borderRadius: 6, cursor: "pointer", fontSize: 15 }}>
           취소
         </button>
       </div>
@@ -218,12 +264,10 @@ function PostForm({ pw, initial, onDone, onCancel }: {
   );
 }
 
-// ─── 연혁 폼 ─────────────────────────────────────────────
 function HistoryForm({ pw, initial, onDone, onCancel }: {
   pw: string; initial?: HistoryItem | null; onDone: () => void; onCancel: () => void;
 }) {
   const [year, setYear] = useState(initial?.year ?? "");
-  // 각 항목을 줄바꿈으로 구분해 textarea에서 편집
   const [eventsText, setEventsText] = useState(initial?.events.join("\n") ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -250,7 +294,6 @@ function HistoryForm({ pw, initial, onDone, onCancel }: {
       <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 20, fontWeight: 700, color: "var(--text-dark)", marginBottom: 28 }}>
         {initial ? "연혁 수정" : "연혁 추가"}
       </h2>
-
       <div style={{ marginBottom: 16 }}>
         <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>연도 *</label>
         <input
@@ -262,7 +305,6 @@ function HistoryForm({ pw, initial, onDone, onCancel }: {
           maxLength={10}
         />
       </div>
-
       <div style={{ marginBottom: 28 }}>
         <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--text-mid)" }}>
           항목 <span style={{ fontWeight: 400, color: "var(--text-gray)" }}>(한 줄에 하나씩 입력)</span>
@@ -278,14 +320,12 @@ function HistoryForm({ pw, initial, onDone, onCancel }: {
           Enter로 줄을 바꾸면 각각 별도 항목으로 저장됩니다.
         </p>
       </div>
-
-      {error && <p style={{ color: "#c0392b", fontSize: 13, marginBottom: 16 }}>{error}</p>}
-
+      {error && <p style={{ color: "#e05050", fontSize: 13, marginBottom: 16 }}>{error}</p>}
       <div style={{ display: "flex", gap: 12 }}>
         <button type="submit" disabled={saving} style={{ ...btnPrimary, flex: 1, padding: "12px 0", fontSize: 15, opacity: saving ? 0.6 : 1 }}>
           {saving ? "저장 중..." : "저장"}
         </button>
-        <button type="button" onClick={onCancel} style={{ padding: "12px 24px", background: "white", color: "var(--text-mid)", border: "1px solid #d8e8d0", borderRadius: 6, cursor: "pointer", fontSize: 15 }}>
+        <button type="button" onClick={onCancel} style={{ padding: "12px 24px", background: "var(--surface)", color: "var(--text-mid)", border: "1px solid var(--border)", borderRadius: 6, cursor: "pointer", fontSize: 15 }}>
           취소
         </button>
       </div>
@@ -293,7 +333,6 @@ function HistoryForm({ pw, initial, onDone, onCancel }: {
   );
 }
 
-// ─── 사업소식 탭 ──────────────────────────────────────────
 function NewsTab({ pw }: { pw: string }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -330,7 +369,7 @@ function NewsTab({ pw }: { pw: string }) {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 20, fontWeight: 700, color: "var(--text-dark)" }}>사업소식</h2>
         <button onClick={() => setView("new")} style={btnPrimary}>+ 새 글 작성</button>
       </div>
@@ -340,16 +379,27 @@ function NewsTab({ pw }: { pw: string }) {
       ) : posts.length === 0 ? (
         <p style={{ color: "var(--text-gray)", textAlign: "center", padding: "60px 0" }}>게시글이 없습니다.</p>
       ) : (
-        <div style={{ background: "white", borderRadius: 8, border: "1px solid #e8ede4", overflow: "hidden" }}>
+        <div style={{ background: "var(--bg)", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden" }}>
           {posts.map((post, idx) => (
-            <div key={post.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 24px", borderBottom: idx < posts.length - 1 ? "1px solid #f0f4ed" : "none", background: post.isPinned ? "#fffdf0" : "white" }}>
+            <div
+              key={post.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "14px 20px",
+                borderBottom: idx < posts.length - 1 ? "1px solid var(--border-light)" : "none",
+                background: post.isPinned ? "var(--surface-pinned)" : "var(--surface)",
+                flexWrap: "wrap",
+              }}
+            >
               {post.isPinned && <span style={{ fontSize: 11, fontWeight: 700, color: "#8a6a00", background: "var(--yellow-light)", padding: "2px 8px", borderRadius: 2, flexShrink: 0 }}>공지</span>}
-              <span style={{ fontSize: 12, color: "var(--text-gray)", flexShrink: 0, background: "#f0f4ed", padding: "2px 8px", borderRadius: 2 }}>{CATEGORY_LABELS[post.category] ?? post.category}</span>
-              <span style={{ flex: 1, fontSize: 15, color: "var(--text-dark)", fontWeight: post.isPinned ? 600 : 400 }}>{post.title}</span>
-              {post.attachmentUrl && <span style={{ fontSize: 14 }}>📎</span>}
+              <span style={{ fontSize: 12, color: "var(--text-gray)", flexShrink: 0, background: "var(--green-light)", padding: "2px 8px", borderRadius: 2 }}>{CATEGORY_LABELS[post.category] ?? post.category}</span>
+              <span style={{ flex: 1, fontSize: 15, color: "var(--text-dark)", fontWeight: post.isPinned ? 600 : 400, minWidth: 100 }}>{post.title}</span>
+              {post.attachments?.length > 0 && <span style={{ fontSize: 13, color: "var(--text-gray)" }}>📎{post.attachments.length > 1 ? ` ${post.attachments.length}` : ""}</span>}
               <span style={{ fontSize: 13, color: "var(--text-gray)", flexShrink: 0 }}>{post.date}</span>
-              <button onClick={() => { setEditing(post); setView("edit"); }} style={{ padding: "6px 14px", background: "white", border: "1px solid #d8e8d0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "var(--text-mid)", flexShrink: 0 }}>수정</button>
-              <button onClick={() => handleDelete(post.id)} style={{ padding: "6px 14px", background: "white", border: "1px solid #f0c0c0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#c0392b", flexShrink: 0 }}>삭제</button>
+              <button onClick={() => { setEditing(post); setView("edit"); }} style={{ padding: "6px 14px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "var(--text-mid)", flexShrink: 0 }}>수정</button>
+              <button onClick={() => handleDelete(post.id)} style={{ padding: "6px 14px", background: "var(--surface)", border: "1px solid #f0c0c0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#e05050", flexShrink: 0 }}>삭제</button>
             </div>
           ))}
         </div>
@@ -358,7 +408,6 @@ function NewsTab({ pw }: { pw: string }) {
   );
 }
 
-// ─── 연혁 탭 ─────────────────────────────────────────────
 function HistoryTab({ pw }: { pw: string }) {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -395,7 +444,7 @@ function HistoryTab({ pw }: { pw: string }) {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 20, fontWeight: 700, color: "var(--text-dark)" }}>연혁 관리</h2>
         <button onClick={() => setView("new")} style={btnPrimary}>+ 연혁 추가</button>
       </div>
@@ -411,8 +460,8 @@ function HistoryTab({ pw }: { pw: string }) {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {items.map((item) => (
-            <div key={item.id} style={{ background: "white", borderRadius: 8, border: "1px solid #e8ede4", padding: "20px 24px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+            <div key={item.id} style={{ background: "var(--surface)", borderRadius: 8, border: "1px solid var(--border)", padding: "20px 24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 18, fontWeight: 700, color: "var(--green-dark)", marginBottom: 10, paddingBottom: 8, borderBottom: "2px solid var(--yellow-mid)", display: "inline-block" }}>
                     {item.year}
@@ -427,8 +476,8 @@ function HistoryTab({ pw }: { pw: string }) {
                   </ul>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                  <button onClick={() => { setEditing(item); setView("edit"); }} style={{ padding: "6px 14px", background: "white", border: "1px solid #d8e8d0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "var(--text-mid)" }}>수정</button>
-                  <button onClick={() => handleDelete(item.id)} style={{ padding: "6px 14px", background: "white", border: "1px solid #f0c0c0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#c0392b" }}>삭제</button>
+                  <button onClick={() => { setEditing(item); setView("edit"); }} style={{ padding: "6px 14px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "var(--text-mid)" }}>수정</button>
+                  <button onClick={() => handleDelete(item.id)} style={{ padding: "6px 14px", background: "var(--surface)", border: "1px solid #f0c0c0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#e05050" }}>삭제</button>
                 </div>
               </div>
             </div>
@@ -439,7 +488,6 @@ function HistoryTab({ pw }: { pw: string }) {
   );
 }
 
-// ─── 메인 관리자 UI ──────────────────────────────────────
 function AdminMain({ pw }: { pw: string }) {
   const [tab, setTab] = useState<Tab>("news");
 
@@ -449,10 +497,9 @@ function AdminMain({ pw }: { pw: string }) {
       style={{
         padding: "10px 24px",
         borderRadius: "6px 6px 0 0",
-        border: "1px solid",
-        borderBottom: tab === t ? "1px solid white" : "1px solid #e8ede4",
-        borderColor: tab === t ? "#e8ede4" : "#e8ede4",
-        background: tab === t ? "white" : "var(--bg)",
+        border: "1px solid var(--border)",
+        borderBottom: tab === t ? `1px solid var(--surface)` : "1px solid var(--border)",
+        background: tab === t ? "var(--surface)" : "var(--bg)",
         color: tab === t ? "var(--green-dark)" : "var(--text-gray)",
         fontWeight: tab === t ? 700 : 400,
         fontSize: 14,
@@ -466,18 +513,17 @@ function AdminMain({ pw }: { pw: string }) {
   );
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 60px" }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 0" }} className="pg-pad">
       <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 26, fontWeight: 700, color: "var(--text-dark)", marginBottom: 28 }}>
         관리자
       </h1>
 
-      {/* 탭 */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 0, borderBottom: "1px solid #e8ede4" }}>
+      <div style={{ display: "flex", gap: 4, marginBottom: 0, borderBottom: "1px solid var(--border)" }}>
         {tabBtn("news", "사업소식")}
         {tabBtn("history", "연혁")}
       </div>
 
-      <div style={{ background: "white", border: "1px solid #e8ede4", borderTop: "none", borderRadius: "0 0 8px 8px", padding: "32px" }}>
+      <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderTop: "none", borderRadius: "0 0 8px 8px", padding: "32px" }}>
         {tab === "news" && <NewsTab pw={pw} />}
         {tab === "history" && <HistoryTab pw={pw} />}
       </div>
@@ -485,7 +531,6 @@ function AdminMain({ pw }: { pw: string }) {
   );
 }
 
-// ─── 최상위 ──────────────────────────────────────────────
 export default function AdminClient() {
   const [pw, setPw] = useState<string | null>(null);
 

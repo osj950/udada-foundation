@@ -8,7 +8,6 @@ type HistoryItem = {
   events: string[];
 };
 
-// 시트 데이터가 없을 때 보여줄 초기 데이터
 const FALLBACK: HistoryItem[] = [
   { id: "1", year: "2001", events: ["(사)사랑의 도시락보내기 운동본부 부설 비인가 대안교육기관 운영 개시", "학교밖청소년 교육 및 문화, 심리지원"] },
   { id: "2", year: "2009", events: ["2009년 2월 2일 법인 분리", "(사) 우다다청소년재단 공식 설립"] },
@@ -38,17 +37,18 @@ export default function HistoryClient() {
   return (
     <>
       <div
+        className="mob-head-pad"
         style={{
           marginTop: 68,
           background: "linear-gradient(135deg, #1e3a14 0%, #2d5220 100%)",
           padding: "64px 0",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 60px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }} className="pg-pad">
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", color: "var(--yellow)", textTransform: "uppercase", marginBottom: 12 }}>
             History
           </div>
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
+          <h1 className="page-h1" style={{ fontFamily: "'Noto Serif KR', serif", fontSize: 40, fontWeight: 700, color: "white" }}>
             연혁
           </h1>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", marginTop: 12 }}>
@@ -57,16 +57,16 @@ export default function HistoryClient() {
         </div>
       </div>
 
-      <section style={{ background: "var(--bg)", padding: "80px 0", minHeight: "50vh" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 60px" }}>
+      <section style={{ background: "var(--bg)", padding: "80px 0", minHeight: "50vh" }} className="mob-sec-pad">
+        <div style={{ maxWidth: 800, margin: "0 auto" }} className="pg-pad">
           {loading ? (
             <p style={{ textAlign: "center", padding: "80px 0", color: "var(--text-gray)" }}>불러오는 중...</p>
           ) : (
-            <div style={{ position: "relative", paddingLeft: 48 }}>
+            <div style={{ position: "relative", paddingLeft: 40 }}>
               <div
                 style={{
                   position: "absolute",
-                  left: 16,
+                  left: 12,
                   top: 0,
                   bottom: 0,
                   width: 2,
@@ -74,11 +74,11 @@ export default function HistoryClient() {
                 }}
               />
               {items.map((item) => (
-                <div key={item.id} style={{ position: "relative", marginBottom: 48 }}>
+                <div key={item.id} style={{ position: "relative", marginBottom: 40 }}>
                   <div
                     style={{
                       position: "absolute",
-                      left: -40,
+                      left: -36,
                       top: 4,
                       width: 16,
                       height: 16,
@@ -89,11 +89,12 @@ export default function HistoryClient() {
                     }}
                   />
                   <div
+                    className="mob-card-pad"
                     style={{
-                      background: "white",
+                      background: "var(--surface)",
                       borderRadius: 8,
                       padding: "28px 32px",
-                      border: "1px solid #e8ede4",
+                      border: "1px solid var(--border)",
                       boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                     }}
                   >
@@ -120,7 +121,7 @@ export default function HistoryClient() {
                             alignItems: "flex-start",
                             gap: 10,
                             padding: "8px 0",
-                            borderBottom: ei < item.events.length - 1 ? "1px solid #f0f4ed" : "none",
+                            borderBottom: ei < item.events.length - 1 ? "1px solid var(--border-light)" : "none",
                             fontSize: 15,
                             color: "var(--text-mid)",
                             lineHeight: 1.7,
