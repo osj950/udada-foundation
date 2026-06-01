@@ -139,21 +139,23 @@ function PostForm({ pw, initial, onDone, onCancel }: {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
     setUploading(true);
     setError("");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await adminFetch("/api/admin/drive", pw, { method: "POST", body: fd });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        setError(`파일 업로드 실패: ${errData.detail ?? errData.error ?? res.status}`);
-        return;
+      for (const file of files) {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await adminFetch("/api/admin/drive", pw, { method: "POST", body: fd });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setError(`"${file.name}" 업로드 실패: ${errData.detail ?? errData.error ?? res.status}`);
+          break;
+        }
+        const data = await res.json();
+        setAttachments((prev) => [...prev, { url: data.url, name: data.name }]);
       }
-      const data = await res.json();
-      setAttachments((prev) => [...prev, { url: data.url, name: data.name }]);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } finally {
       setUploading(false);
@@ -236,13 +238,14 @@ function PostForm({ pw, initial, onDone, onCancel }: {
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             onChange={handleFile}
             disabled={uploading}
             style={{ fontSize: 13, color: "var(--text-dark)", flex: 1 }}
           />
           {uploading && <span style={{ fontSize: 12, color: "var(--text-gray)", flexShrink: 0 }}>업로드 중...</span>}
         </div>
-        <p style={{ fontSize: 11, color: "var(--text-gray)", marginTop: 4 }}>파일을 선택하면 자동으로 추가됩니다. 여러 번 선택해 복수 첨부 가능.</p>
+        <p style={{ fontSize: 11, color: "var(--text-gray)", marginTop: 4 }}>Ctrl(Cmd) 또는 Shift로 여러 파일을 동시에 선택할 수 있습니다.</p>
       </div>
 
       <div style={{ marginBottom: 28 }}>
